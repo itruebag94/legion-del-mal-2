@@ -6,3 +6,9 @@ Es un personaje que aparece en los cómics publicados por la editorial estadouni
 - Doctor Octopus
 - Green Goblin
 - Spiderman
+
+## Películas de Venom
+
+- Venom (5 de octubre de 2018)
+- Venom: Let There Be Carnage (1 de octubre de 2021)
+- Venom: El último baile (25 de octubre de 2024)
