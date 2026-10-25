@@ -110,3 +110,6 @@ _Este repositorio es propiedad de la Legión del Mal. Acceso no autorizado será
 
 _Informe generado automáticamente por Brainiac v12.0_
 _"Los datos no mienten. Los seres orgánicos sí."_
+
+**Curso en DevTalles
+Git + GitHub by Fernando Herrera
