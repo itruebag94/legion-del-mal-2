@@ -34,8 +34,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v4
-
-      - name: Ejecutar un script
-        run: echo "¡Workflow iniciado con éxito!"
+      - name: Imprimir inputs
+        run: |
+          echo "Inputs: "
+          echo ""
+          echo "Villano: ${{inputs.villano}}"
+          echo "Nivel: ${{inputs.prioridad}}"
+          echo "Mensaje: ${{inputs.mensaje}}"
