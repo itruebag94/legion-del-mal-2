@@ -28,8 +28,10 @@ jobs:
           echo ""
           echo "Planes:"
           ls planes/
+          echo ""
           echo "Miembros:"
           ls miembros/ 
-          echo "Inteligencia"
+          echo ""
+          echo "Inteligencia:"
           ls inteligencia/
 
