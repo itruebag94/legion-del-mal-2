@@ -1,0 +1,28 @@
+name: Comunicador de la Legión
+
+on:
+  workflow_dispatch:
+    inputs:
+      villano:
+        description: "¿Qué villano envía el mensaje?"
+        required: true
+        type: choice
+        options:
+          - Lex Luthor
+          - Magneto
+          - Joker
+          - Mystique
+          - Brainiac
+          - Bane
+        
+
+jobs:
+  transmitir_mensaje:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Ejecutar un script
+        run: echo "¡Workflow iniciado con éxito!"
