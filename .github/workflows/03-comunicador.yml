@@ -14,6 +14,17 @@ on:
           - Mystique
           - Brainiac
           - Bane
+      
+      cow_character:
+        description: "Personaje de vaca para el mensaje"
+        required: true
+        type: choice
+        options:
+          - eyes
+          - tux
+          - dragon
+          - ghostbusters
+          - vader
 
       mensaje:
         description: "Mensaje para el consejo"
@@ -48,7 +59,7 @@ jobs:
           echo ""
           echo "Fecha: $(date -u +"%d/%m/%Y - %H:%M:%S UTC")"
           echo "------Mensaje------"
-          cowsay -f eyes "${{inputs.mensaje}}"
+          cowsay -f "${{inputs.cow_character}}" "${{inputs.mensaje}}"
           echo ""
           echo "----${{inputs.villano}}----"
           echo " Fin de transmisión ..."
