@@ -18,3 +18,8 @@ Es un personaje que aparece en los cómics publicados por la editorial estadouni
 - Spiderman
 - Eddie Brock
 - Mac Gargan
+
+## Estrategia recomendada
+
+**NUNCA enfrentar a Venom de frente, es un peligro inminente**
+La estrategia óptima es utilizar el ruido acustico para desestabilizar el simbionte y poder luego eliminarlo.
