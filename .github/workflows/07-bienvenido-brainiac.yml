@@ -1,0 +1,50 @@
+# ╔══════════════════════════════════════════════════════╗
+# ║   BIENVENIDA DE BRAINIAC                            ║
+# ║                                                      ║
+# ║   Cuando alguien crea un issue, Brainiac responde    ║
+# ║   de inmediato confirmando que lo está revisando.    ║
+# ╚══════════════════════════════════════════════════════╝
+
+name: 🤖 Bienvenido Brainiac
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  responder-issue:
+    name: Brainiac revisa el issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comentario de bienvenida de Brainiac
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const autor = context.payload.issue.user.login;
+            const numero = context.payload.issue.number;
+
+            const mensaje = [
+              `🧠 **Saludos, @${autor}.**`,
+              '',
+              `Tu issue **#${numero}** ha sido detectado por Brainiac y está siendo revisado por el Consejo de la Legión del Mal.`,
+              '',
+              '> "Toda información será analizada, clasificada y almacenada en la base lunar. La paciencia es una virtud... incluso para los villanos."',
+              '',
+              '⏳ **Título:** ${context.payload.issue.title}',
+              '⏳ **Estado:** En revisión por Brainiac',
+              '📡 **Prioridad:** Pendiente de clasificación',
+              '',
+              '_Este mensaje fue generado automáticamente por los sistemas de vigilancia de la Legión._'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: numero,
+              body: mensaje
+            });
