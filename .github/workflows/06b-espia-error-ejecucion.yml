@@ -29,8 +29,8 @@ jobs:
           echo "✅ Planes verificados."
       - name: Escanear fichas de villanos
         run: |
-          echo "🔍 Escaneando fichas de villanos..."
-          ls vilanos/
+          echo "🔍 Escaneando fichas de miembros..."
+          ls miembros/
           echo "✅ Fichas verificadas."
       - name: Escanear inteligencia sobre héroes
         run: |
