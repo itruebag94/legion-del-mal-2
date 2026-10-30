@@ -27,6 +27,7 @@ jobs:
           script: |
             const autor = context.payload.issue.user.login;
             const numero = context.payload.issue.number;
+            const titulo = context.payload.issue.title;
 
             const mensaje = [
               `🧠 **Saludos, @${autor}.**`,
@@ -35,7 +36,7 @@ jobs:
               '',
               '> "Toda información será analizada, clasificada y almacenada en la base lunar. La paciencia es una virtud... incluso para los villanos."',
               '',
-              '⏳ **Título:** ${context.payload.issue.title}',
+              `⏳ **Título:** ${titulo}`,
               '⏳ **Estado:** En revisión por Brainiac',
               '📡 **Prioridad:** Pendiente de clasificación',
               '',
