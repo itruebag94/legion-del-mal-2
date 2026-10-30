@@ -6,7 +6,7 @@ nombre: "Mystique"
 nombre_real: "Raven Darkhölme"
 universo: Marvel
 rango: "Jefa de infiltración"
-estado: activo
+estado: inactivo
 
 perfil:
   identidad_publica: "Ninguna. Mystique puede ser quien quiera, cuando quiera."
