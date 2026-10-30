@@ -2,8 +2,15 @@
 # ║   BIENVENIDA DE BRAINIAC                            ║
 # ║                                                      ║
 # ║   Cuando alguien crea un issue, Brainiac responde    ║
-# ║   de inmediato confirmando que lo está revisando.    ║
+# ║   de inmediato confirmando que lo está revisando     ║
+# ║   y envía un correo de aviso a Ignacio.               ║
 # ╚══════════════════════════════════════════════════════╝
+#
+# Secrets necesarios en Settings → Secrets and variables → Actions:
+#   MAIL_USERNAME  → cuenta de Gmail que envía (ej. brainiac@gmail.com)
+#   MAIL_PASSWORD  → contraseña de aplicación de esa cuenta de Gmail
+#   MAIL_SERVER    → (opcional) servidor SMTP, por defecto smtp.gmail.com
+#   MAIL_PORT      → (opcional) puerto SMTP, por defecto 465
 
 name: 🤖 Bienvenido Brainiac
 
@@ -49,3 +56,34 @@ jobs:
               issue_number: numero,
               body: mensaje
             });
+
+      - name: Enviar correo de aviso a Ignacio
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          # Servidor SMTP de Gmail. Se puede cambiar con los secrets
+          # MAIL_SERVER y MAIL_PORT si se usa otro proveedor.
+          server_address: "${{ secrets.MAIL_SERVER || 'smtp.gmail.com' }}"
+          server_port: "${{ secrets.MAIL_PORT || 465 }}"
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "🧠 Nuevo issue #${{ github.event.issue.number }} en ${{ github.repository }}"
+          to: ignacio.truegandur@gmail.com
+          from: "Brainiac <${{ secrets.MAIL_USERNAME }}>"
+          body: |
+            Saludos, Ignacio.
+
+            Brainiac ha detectado un nuevo issue en la Legión del Mal.
+
+            Repositorio: ${{ github.repository }}
+            Issue: #${{ github.event.issue.number }} - ${{ github.event.issue.title }}
+            Autor: @${{ github.event.issue.user.login }}
+            Estado: En revisión por Brainiac
+            Enlace: ${{ github.event.issue.html_url }}
+
+            Descripción:
+            ${{ github.event.issue.body }}
+
+            --
+            Sistemas de vigilancia de la Legión del Mal
