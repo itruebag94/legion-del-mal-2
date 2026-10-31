@@ -1,0 +1,142 @@
+# ╔═══════════════════════════════════════════════════════════════╗
+# ║   TAG → RELEASE AUTOMÁTICO                                    ║
+# ║                                                               ║
+# ║   Cada vez que se crea un tag (ej. v1.0.0), Brainiac genera    ║
+# ║   un release con el registro de cambios (git log), los         ║
+# ║   archivos afectados y los autores de esos commits.            ║
+# ╚═══════════════════════════════════════════════════════════════╝
+#
+# Cómo usarlo:
+#   git tag -a v1.0.0 -m "Primera versión de la Legión"
+#   git push origin v1.0.0
+#
+# Permisos: el workflow necesita contents: write para crear el release.
+
+name: 🏷️ Tag a Release
+
+on:
+  push:
+    tags:
+      - "v*"        # Solo tags tipo v1.0.0
+      # - "*"       # Si quieres que cualquier tag dispare el release, usa esta línea
+
+permissions:
+  contents: write
+
+jobs:
+  publicar-release:
+    name: Brainiac publica la versión
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Brainiac accede al historial completo
+        uses: actions/checkout@v4
+        with:
+          # Necesario para poder comparar con el tag anterior y leer todos los logs
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Recopilar logs y cambios de la versión
+        id: logs
+        run: |
+          set -uo pipefail
+
+          TAG="${GITHUB_REF_NAME}"
+
+          # Tag anterior. Si el tag actual es el primer commit, este comando falla
+          # y PREV_TAG queda vacío (primera versión).
+          PREV_TAG=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)
+
+          echo "Tag actual:  ${TAG}"
+          echo "Tag anterior: ${PREV_TAG:-<ninguno>}"
+
+          # Cabecera del release
+          {
+            echo "## 🧠 Registro de la versión \`${TAG}\`"
+            echo ""
+            echo "**Fecha de lanzamiento:** $(date -u +'%d/%m/%Y - %H:%M UTC')"
+            echo "**Lanzado por:** @${GITHUB_ACTOR}"
+            echo "**Repositorio:** ${GITHUB_REPOSITORY}"
+            echo ""
+          } > notas.md
+
+          # Rango de commits a analizar
+          if [ -z "${PREV_TAG}" ]; then
+            RANGO="${TAG}"
+            {
+              echo "### 🆕 Primera versión de la Legión"
+              echo ""
+              echo "No existe una versión anterior, así que aquí está la historia completa:"
+              echo ""
+            } >> notas.md
+          else
+            RANGO="${PREV_TAG}..${TAG}"
+            {
+              echo "### 📜 Cambios desde \`${PREV_TAG}\`"
+              echo ""
+              echo "Comparación completa: [\`${PREV_TAG}...${TAG}\`](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/${PREV_TAG}...${TAG})"
+              echo ""
+            } >> notas.md
+          fi
+
+          # Lista de commits (los "logs")
+          NUM_COMMITS=$(git rev-list --count "${RANGO}" 2>/dev/null || echo 0)
+          COMMITS=$(git log --pretty=format:'- %s (`%h`) — %an' "${RANGO}" 2>/dev/null || true)
+
+          if [ -z "${COMMITS}" ]; then
+            echo "_Sin cambios registrados en esta versión._" >> notas.md
+          else
+            {
+              echo "### 🛠️ Qué cambió (${NUM_COMMITS} commit(s))"
+              echo ""
+              echo "${COMMITS}"
+            } >> notas.md
+          fi
+          echo "" >> notas.md
+
+          # Resumen de archivos modificados (solo si hay versión anterior)
+          if [ -n "${PREV_TAG}" ]; then
+            {
+              echo "### 📊 Archivos afectados"
+              echo ""
+              echo '```'
+              git diff --stat "${PREV_TAG}..${TAG}" 2>/dev/null || true
+              echo '```'
+              echo ""
+            } >> notas.md
+          fi
+
+          # Autores implicados
+          {
+            echo "### 👥 Villanos implicados"
+            echo ""
+            git log --pretty=format:'%an' "${RANGO}" 2>/dev/null | sort -u | sed 's/^/- /' || true
+            echo ""
+            echo "---"
+            echo ""
+            echo "_Release generado automáticamente por Brainiac v12.0_"
+            echo '_"El progreso se mide en versiones, no en buenas intenciones."_'
+          } >> notas.md
+
+          # Mostrar las notas también en el resumen del workflow
+          cat notas.md >> "${GITHUB_STEP_SUMMARY}"
+
+          # Guardar en la salida del step por si se necesita después
+          {
+            echo "tag=${TAG}"
+            echo "prev_tag=${PREV_TAG}"
+            echo "num_commits=${NUM_COMMITS}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Brainiac publica el release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "🦹 Legión del Mal ${{ github.ref_name }}"
+          body_path: notas.md
+          # Añade además las notas automáticas de GitHub (PRs, colaboradores...).
+          # Ponlo en false si solo quieres el changelog de commits de arriba.
+          generate_release_notes: true
+          draft: false
+          # Marca como pre-release si el tag contiene -rc, -beta o -alpha
+          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }}
