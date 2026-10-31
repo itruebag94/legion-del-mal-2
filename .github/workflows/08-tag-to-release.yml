@@ -19,7 +19,12 @@ on:
     tags:
       - "v*"        # Solo tags tipo v1.0.0
       # - "*"       # Si quieres que cualquier tag dispare el release, usa esta línea
-
+  workflow_dispatch:
+    inputs:
+        tag:
+            description: 'Tag a publicar (ej. v1.0.0)'
+            required: true
+            
 permissions:
   contents: write
 
